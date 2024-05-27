@@ -14,11 +14,13 @@ tcBack.replaceWith(()=>{
 	}else if (face[0].tab==2) {
 		face[0].tab=1;
 		face[0].bar();
-	}else if (face.appPrev!="settings")
-		face.go(face.appPrev,0);
+	}//else if (face.appPrev!="settings")
+	//	face.go(face.appPrev,0);
 	else
-		face.go("clock",0);
+		face.go(face.appPrev,0);
+		//face.go("clock",0);
 });
+
 //dash  Alerts
 face[0] = {
 	offms: (ew.def.off[face.appCurr])?ew.def.off[face.appCurr]:9000,
@@ -26,6 +28,7 @@ face[0] = {
 	init: function(){
 		this.tab=1;
 		if (face.appPrev!="settings"&&face.appPrev!="dashOptions")  face.last=face.appPrev;
+		this.btn=[theme.btn.onT,theme.btn.onB,theme.btn.offT,0];
 		if (ew.def.info==2){
 			UI.btn.ntfy(0,3,1);
 			face[0].page=1;
@@ -53,18 +56,18 @@ face[0] = {
 				UIc.start(1,0);
 				//if (m) 
 				if (this.slot == "amp" ) {
-					UI.btn.c2l("main","_main",1,trgt=="hi"?"HI":"LOW","",15,1);
-					UI.btn.c2l("main","_main",2,"HAPTIC","",15,euc.dash.alrt[this.slot].hapt.en?4:1);
-				}else UI.btn.c2l("main","_main",3,"HAPTIC","",15,euc.dash.alrt[this.slot].hapt.en?4:1);
+					UI.btn.c2l("main","_main",1,trgt=="hi"?"HI":"LOW","",this.btn[0],this.btn[1]);
+					UI.btn.c2l("main","_main",2,euc.dash.alrt[this.slot].hapt.en?"ENABLED":"DISABLED","",this.btn[0],euc.dash.alrt[this.slot].hapt.en?this.btn[3]:this.btn[3]);
+				}else UI.btn.c2l("main","_main",3,euc.dash.alrt[this.slot].hapt.en?"ENABLED":"DISABLED","",this.btn[0],euc.dash.alrt[this.slot].hapt.en?this.btn[1]:this.btn[3]);
 				UIc.end();
-				UI.btn.c3l("main","_lcd",1,euc.dash.alrt[this.slot].hapt[trgt],txt2,14,0);
+				UI.btn.c3l("main","_lcd",1,euc.dash.alrt[this.slot].hapt[trgt],txt2,this.btn[0],euc.dash.alrt[this.slot].hapt.en?this.btn[1]:this.btn[3]);
 				//UI.btn.ntfy(1,3,0,"_bar",6,txt,". . . . . . . . .",15,0,1);
-				UI.btn.ntfy(1,3,0,"_bar",6,"SET",txt,15,1,1);
+				UI.btn.ntfy(1,3,0,"_bar",6,"SET",txt,this.btn[0],this.btn[3],1);
 				ew.temp.bar=1;
 				TC.val={cur:euc.dash.alrt[this.slot].hapt[trgt],dn:limD,up:limU,tmp:0};
 				UIc.tcBar=(a,b)=>{ 
 					UI.btn.ntfy(0,3,1);
-					UI.btn.c1l("main","_lcd",1,b,"",14,0);
+					UI.btn.c1l("main","_lcd",1,b,"",this.btn[0],euc.dash.alrt[this.slot].hapt.en?this.btn[1]:this.btn[3]);
 					euc.dash.alrt[this.slot].hapt[trgt]=b;
 				};
 				UIc.main._main=(i)=>{
@@ -130,7 +133,7 @@ face[0] = {
 				this.sel(2,"pwm","HI PWM","%","hi",50,90);
 			};
 		}
-		UI.ele.title("ALERTS",15,0);
+		UI.ele.title("HAPTIC ALERTS",15,0);
 		UIc.end();
 	},
 	show : function(){

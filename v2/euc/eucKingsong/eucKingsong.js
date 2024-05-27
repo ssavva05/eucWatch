@@ -1,9 +1,6 @@
+//Kingsong euc module
 E.setFlags({ pretokenise: 1 });
-//kingsong euc module 
-//euc.conn(euc.mac);
-//euc.wri("lightsOn")
-//temp
-//commands
+euc.buff=[];
 euc.wri = function(i) { if (euc.dbg) console.log("not connected yet"); if (i == "end") euc.off(); return; };
 euc.cmd = function(no, val) {
 	//"ram";
@@ -17,9 +14,9 @@ euc.cmd = function(no, val) {
 			return [170, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99, 20, 90, 90];
 		case "getAlarms":
 			return [170, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 20, 90, 90];
-		case "doBeep":
-			return [170, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136, 20, 90, 90];
 		case "doHorn":
+			return [170, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136, 20, 90, 90];
+		case "doBeep":
 			return [170, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 124, 20, 90, 90];
 		case "setLiftOnOff":
 			return [170, 85, val ? 1 : 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 126, 20, 90, 90];
@@ -149,7 +146,13 @@ euc.temp.city = function() {
 euc.temp.inpk = function(event) {
 	// "ram";
 	let inpk = JSON.parse(E.toJS(event.target.value.buffer));
-	if (ew.is.bt == 5) NRF.updateServices({ 0xffe0: { 0xffe1: { value: inpk, notify: true } } });
+	if (ew.is.bt == 5) {
+		NRF.updateServices({ 0xffe0: { 0xffe1: { value: inpk, notify: true } } });
+		//if (ew.dbg&&ew.log) {
+		//	ew.log.unshift("Proxy from wheel: "+" "+Date()+" "+E.toJS(inpk));
+		//	if (100<ew.log.length) ew.log.pop();
+		//}
+	}
 	if (inpk[0] == 188) return;
 	euc.is.alert = 0;
 	if (8 < euc.dbg) console.log("INPUT :", inpk);
@@ -217,7 +220,7 @@ euc.temp.one = function(inpk) {
 	}
 	//volt
 	euc.dash.live.volt = (inpk[3] << 8 | inpk[2]) / 100;
-	euc.dash.live.bat = Math.round(100 * (euc.dash.live.volt * (100 / (16 * euc.dash.opt.bat.pack)) - euc.dash.opt.bat.low) / (euc.dash.opt.bat.hi - euc.dash.opt.bat.low));
+	euc.dash.live.bat = Math.round(100 * (euc.dash.live.volt * (100 / euc.dash.opt.bat.pack) - euc.dash.opt.bat.low) / (euc.dash.opt.bat.hi - euc.dash.opt.bat.low));
 	euc.log.batL.unshift(euc.dash.live.bat);
 	if (20 < euc.log.batL.length) euc.log.batL.pop();
 	euc.dash.alrt.bat.cc = (50 <= euc.dash.live.bat) ? 0 : (euc.dash.live.bat <= euc.dash.alrt.bat.hapt.low) ? 2 : 1;
@@ -231,7 +234,7 @@ euc.temp.one = function(inpk) {
 	euc.log.trip.forEach(function(val, pos) { if (!val) euc.log.trip[pos] = euc.dash.trip.totl; });
 	//mode
 	euc.dash.opt.ride.mode = inpk[14];
-	//City lights 
+	//City lights
 	if (euc.dash.opt.lght.city && euc.dash.live.spd) {
 		euc.temp.city();
 	}
@@ -326,7 +329,10 @@ euc.temp.resp = function(inpk) {
 			"18L": [1.25, 0, 1036, 0, 1554],
 			"S18": [1.25, 1110],
 			"S20": [1.875, 2220],
-			"S22": [1.875, 2220]
+			"S22": [1.875, 2220],
+			"SA0": [1.875, 2220],
+			"SA1": [1.875, 2220],
+			"SA2": [1.875, 2220]
 		};
 		//global.lala = inpk;
 		euc.dash.info.get.serl = E.toString(inpk.slice(2, 16), inpk.slice(17, 20));
@@ -357,7 +363,6 @@ euc.temp.resp = function(inpk) {
 		euc.dash.alrt.spd.tilt.val = inpk[10];
 	}
 	else if (inpk[16] == 187) {
-		print("getinfo")
 		if (!euc.dash.info.get.name) {
 			euc.dash.info.get.id = E.toString(inpk.slice(2, inpk.indexOf(0)));
 			if (euc.dash.info.get.id.split("-")) {
@@ -389,6 +394,11 @@ euc.temp.resp = function(inpk) {
 			euc.temp.lockKey = 0;
 		if (1 < euc.dbg) console.log("EUC module: got lock status, lock key:", inpk[2], euc.temp.lockKey);
 		euc.dash.opt.lock.en = inpk[2];
+
+	}
+	if (ew.dbg&&ew.log) { 
+		ew.log.unshift("Proxy from wheel: "+" "+Date()+" "+E.toJS(inpk));
+		if (100<ew.log.length) ew.log.pop();
 	}
 };
 
@@ -422,7 +432,8 @@ euc.conn = function(mac) {
 		euc.gatt.disconnect();
 		return;
 	}
-	//connect 
+	//connect
+	euc.dash.trip.pwm = 0;
 	NRF.connect(mac, { minInterval: 7.5, maxInterval: 15 })
 		.then(function(g) {
 			euc.gatt=g;
@@ -435,47 +446,55 @@ euc.conn = function(mac) {
 			return c;
 		}).then(function(c) {
 			if (euc.dbg) console.log("EUC module Kingsong connected");
+			euc.lala= function(n,v){
+				euc.buff.push([n,v])
+			};
+			euc.test=()=>{
+				if 	(euc.buff[0]){
+					euc.do(euc.buff[0][0],euc.buff[0][1])
+					euc.buff.shift();
+				}
+				if (euc.status!="OFF"){
+					euc.tout.buffer=setTimeout(()=>{
+					euc.test();
+					},500);
+				}
+			};
+			//euc.test();
 			euc.wri = function(n, v) {
-				if (euc.is.busy) {
-					clearTimeout(euc.is.busy);
-					euc.is.busy = setTimeout(() => { euc.is.busy = 0; }, 50);
+				if (euc.tout.busy) {
+					clearTimeout(euc.tout.busy);
+					euc.tout.busy = setTimeout(() => { euc.tout.busy = 0; }, 70);
 					return;
 				}
-				euc.is.busy = setTimeout(() => { euc.is.busy = 0; }, 100);
+				euc.tout.busy = setTimeout(() => { euc.tout.busy = 0; }, 100);
 				if (n === "proxy") {
 					c.writeValue(v).then(function() {
-						return;
+
 					}).catch(euc.off);
-					//rest					
 				}
 				else if (n == "hornOn") {
-					euc.horn = 1;
-					if (euc.temp.horn) {
-						clearTimeout(euc.temp.horn);
-						euc.temp.horn = 0;
+					euc.is.horn = 1;
+					if (euc.tout.horn) {
+						clearTimeout(euc.tout.horn);
+						euc.tout.horn = 0;
 					}
-					c.writeValue(euc.cmd("doHorn")).then(function() {
+					c.writeValue(euc.cmd(euc.dash.auto.onC.talk?"doHorn":"doBeep")).then(function() {
 						return c.writeValue(euc.cmd("setStrobeOnOff", 1));
 					}).then(function() {
-						if (euc.temp.horn) {
-							clearInterval(euc.temp.horn);
-							euc.temp.horn = 0;
-						}
-						euc.temp.horn = setInterval(() => {
+						if (euc.ntid.horn) 	clearInterval(euc.ntid.horn);
+						euc.ntid.horn = setInterval(() => {
 							if (!BTN1.read()) {
-								if (euc.temp.horn) {
-									clearInterval(euc.temp.horn);
-									euc.temp.horn = 0;
-								}
-								c.writeValue(euc.cmd("setStrobeOnOff", 0)).then(function() {
-									euc.horn = 0;
-								});
+								clearInterval(euc.ntid.horn);
+								euc.ntid.horn = 0;
+								euc.is.horn = 0;
+								c.writeValue(euc.cmd("setStrobeOnOff", 0));
 							}
 						}, 200);
 					});
 				}
 				else if (n == "hornOff") {
-					euc.horn = 0;
+					euc.is.horn = 0;
 					return;
 				}
 				else if (n === "start") {
@@ -504,7 +523,6 @@ euc.conn = function(mac) {
 						}
 					}).then(function() {
 						euc.is.run = 1;
-						
 						if (2 < euc.dbg) print("EUC module start: passstate:", euc.temp.pass);
 						if (euc.temp.pass) {
 							euc.dash.opt.lock.pass2 = euc.dash.opt.lock.pass;
@@ -566,73 +584,6 @@ euc.conn = function(mac) {
 			//reconect
 		}).catch(euc.off);
 };
-//catch
-/*
-euc.off = function(err) {
-	if (euc.dbg) console.log("EUC.off :", err);
-	if (euc.is.reconnect) {
-		clearTimeout(euc.is.reconnect);
-		euc.is.reconnect = 0;
-	}
-	if (euc.state != "OFF") {
-		if (euc.dbg) console.log("EUC: Restarting");
-		if (err === "Connection Timeout") {
-			euc.state = "LOST";
-			if (ew.def.dash.rtr < euc.is.run) {
-				euc.tgl();
-				return;
-			}
-			euc.is.run = euc.is.run + 1;
-			if (euc.dash.opt.lock.en == 1) buzzer.nav(250);
-			else buzzer.nav([250, 200, 250, 200, 250]);
-			euc.is.reconnect = setTimeout(() => {
-				euc.is.reconnect = 0;
-				if (euc.state != "OFF") euc.conn(euc.mac);
-			}, 5000);
-		}
-		else if (err === "Disconnected" || err === "Not connected") {
-			euc.state = "FAR";
-			euc.is.reconnect = setTimeout(() => {
-				euc.is.reconnect = 0;
-				if (euc.state != "OFF") euc.conn(euc.mac);
-			}, 1000);
-		}
-		else {
-			euc.state = "RETRY";
-			euc.is.reconnect = setTimeout(() => {
-				euc.is.reconnect = 0;
-				if (euc.state != "OFF") euc.conn(euc.mac);
-			}, 2000);
-		}
-	}
-	else {
-		if (euc.dbg) console.log("EUC OUT:", err);
-		if (euc.is.busy) {
-			clearTimeout(euc.is.busy);
-			euc.is.busy = 0;
-		}
-		if (euc.aOff == 0 || euc.aOff == 1) {
-			euc.dash.auto.onD.off = euc.aOff;
-			delete euc.aOff;
-		}
-		if (euc.aLck == 0 || euc.aLck == 1) {
-			euc.dash.auto.onD.lock = euc.aLock;
-			delete euc.aLck;
-		}
-		
-		
-		euc.off = function(err) { if (euc.dbg) console.log("EUC off, not connected", err); };
-		euc.wri = function(err) { if (euc.dbg) console.log("EUC write, not connected", err); };
-		euc.conn = function(err) { if (euc.dbg) console.log("EUC conn, not connected", err); };
-		euc.cmd = function(err) { if (euc.dbg) console.log("EUC cmd, not connected", err); };
-		euc.is.run = 0;
-		euc.temp = 0;
-		global["\xFF"].bleHdl = [];
-		if (euc.proxy) euc.proxy.e();
-		NRF.setTxPower(ew.def.rfTX);
-	}
-};
-*/
 /*
 		//
 		case "getLogin":return [170,85,0,0,0,0,0,0,0,0,0,0,0,0,0,0,69,20,90,90];

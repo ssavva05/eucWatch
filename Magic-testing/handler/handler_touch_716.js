@@ -14,7 +14,7 @@ var TC = {
 
 	},
 	init: function() {
-		"ram";
+		//"ram";
 		var tp = i2c.readFrom(0x15, 7);
 		if (tp == Uint8Array(7) || (tp[3] == 64 && this.st)) return;
 		if (ew.temp.bar) {
@@ -58,7 +58,8 @@ var TC = {
 			if (tp[2] == 1 && this.st) {
 				this.st = 0;
 				this.do = 1;
-				this.x = ((tp[3] & 0x0F) << 8) | tp[4];
+				//this.x = ((tp[3] & 0x0F) << 8) | tp[4];
+				this.x = tp[4];
 				this.y = ((tp[5] & 0x0F) << 8) | tp[6];
 				this.time = getTime();
 				return;
@@ -66,7 +67,8 @@ var TC = {
 			if (this.do && getTime() - this.time > 1 && tp[2] == 1) {
 				this.do = 0;
 				//setTimeout(function() {TC.emit("tc12",TC.x+(TC.x/10),TC.y);},0);
-				TC.emit("tc12", TC.x + (TC.x / 10), TC.y);
+				//TC.emit("tc12", TC.x + (TC.x / 10), TC.y);
+				UIc.xy(TC.x + (TC.x / 10), TC.y , 1);
 				face.off();
 				//setTimeout(function() {face.off();},200);
 			}
@@ -101,7 +103,7 @@ var TC = {
 		}
 	},
 	bar: function() {
-		"ram";
+		//"ram";
 		var tp = i2c.readFrom(0x15, 7);
 		//print(TC.last);
 		if (ew.temp.bar && 180 < tp[6] && tp[2]) {
@@ -121,7 +123,7 @@ var TC = {
 		else this.st = 1;
 	},
 	start: function() {
-		"ram";
+	//	"ram";
 		if (this.tid) clearInterval(this.tid);
 		digitalPulse(ew.def.rstP, 1, [10, 100]); //touch wake
 		i2c.writeTo(0x15, 0);
@@ -133,7 +135,7 @@ var TC = {
 		}, this.loop);
 	},
 	stop: function() {
-		"ram";
+		//"ram";
 		if (this.tid) clearInterval(this.tid);
 		this.tid = 0;
 		digitalPulse(ew.def.rstP, 1, [5, 50]);

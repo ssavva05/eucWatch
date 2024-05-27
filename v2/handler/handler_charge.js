@@ -1,10 +1,11 @@
 E.setFlags({pretokenise:1});
-
 //charging notify
 setWatch(function(s){
 	let co;
 	let g=w.gfx;
-	if (!s.state) {
+	if (process.env.BOARD == "MAGIC3" || process.env.BOARD == "Magic3" || process.env.BOARD == "ROCK")
+		s.state=1-s.state;
+	if (s.state) {
 		buzzer.nav(200); 
 		ew.is.ondc=1;
 		acc.off();

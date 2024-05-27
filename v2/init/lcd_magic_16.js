@@ -1,11 +1,11 @@
+// MIT License (c) 2020 fanoush https://github.com/fanoush
+// see full license text at https://choosealicense.com/licenses/mit/
+// Magic3-Rock 
 E.setFlags({ pretokenise: 1 });
 ew.is.dddm = 16;
 //magic/rock 
 Modules.addCached("eucWatch", function() {
   //screen driver
-  //
-  /// MIT License (c) 2020 fanoush https://github.com/fanoush
-  // see full license text at https://choosealicense.com/licenses/mit/
   // compiled with options LCD_BPP=16,SHARED_SPIFLASH
   var SPI2 = (function() {
     var bin = atob("//////////8AAAAAAAAAAP////8AAAAAAAAAAAAAAL8QtQZMfETE6QABIDsBIQH6AvKZQKJg4WAQvQC/2P///wZLACLD+AAlw/gIIQEiWmDT+AQjCrHD+AgjcEcA8AJAEkvT+AAlELXqudP4BCMKscP4CCMOSnpEAAYUaMP4CEVUaMP4DEUSacP4ECVJAE/w/zLD+BQlw/hsJcP4JAXD+FQVASAQvU/w/zD75wDwAkCG////CEt7RJuKU7EFStL4GDEAK/vQACPC+BgxA0p6RJOCcEcA8AJARv///y7///8QtQNMfETigiCDYYOjgxC9GP////i1FUb/99z/FEsAJMP4NEX/J8P4OEUBIsP4GEEmRv8pAOsEDMP4RMWLv/80w/hIFcP4SHUAIYi//zkaYSWxGbkHS3tEmoL4vdP4GMG88QAP+tDD+BhhACnh0fTnAPACQMb+//8bSnpEOLUMRtFoWbMXTQcjxfgANU/woEPD+AwYkmgKscP4DCUAIgEh//e4/xFLe0QBLNpoT/CgQ8P4CCgE3QAiYR4BMP/3qv8LS3tEm2gbsU/woELC+Ag1ACABI8X4AAVrYDi9T/D/MPvnAL8A8AJAov7//3b+//9a/v//cLUERoixRhgAJSBGEPgBGxmxRBi0QgLZbUIoRnC9//ex/wAo+dEBNe/nBUb15xO1ACgd2wAppr+N+AUQAiQBJAAqob8CqQkZATQB+AQsACuivwKqEhkBNI34BACovwL4BDwhRgGo//eN/yBGArAQvQAk+uct6fBPn7CRRgCRS0l5RAdGi30AKADwi4AAmgAqAPCHgFoeByoA8oOAASKaQAE60rIFRkBIAZIHIjX4Akux+BqAwPgAJYpoRPoJ9KSyGrFP8KBBwfgMJTlKekQSqAKSBqrN6QMgT/AAClFGApqy+BiwTkYBmh5E9rIHLgLqBAwAmoi/CD4y+BzAgb8V+AEr9rLG8QgOAvoO8kT6A/RP6hwuiL8UQwD4AeBKHAIxC/H/Oy8pAPgCwKSyH/qL+wvdASIFk//38/7a8QEKBZsLvwSYA5hRRgAhu/EAD8rRGEp6RAjx/ziSixdEPUYf+oj4NfgCS0T6CfSksrjxAA+10ZmxQkb/99P+D0t7RJtoG7FP8KBCwvgINQdKACABI8L4AAVTYB+wvejwj//3oP7r50/w/zD25wDwAkCo/f//XP3//9b8//+s/P//");
@@ -122,7 +122,6 @@ Modules.addCached("eucWatch", function() {
     cmd(0xe0, [0xF0, 0x04, 0x0a, 0x0a, 0x08, 0x25, 0x33, 0x27, 0x3d, 0x38, 0x14, 0x14, 0x25, 0x2a]);
     //cmd(0xe0, [0x70, 0x15, 0x20, 0x15, 0x10, 0x09, 0x48, 0x33, 0x53, 0x0B, 0x19, 0x15, 0x2a, 0x2f]);   // PVGAMCTRL (E0h): Positive Voltage Gamma Control
     //cmd([0xe1, 0x70, 0x15, 0x20, 0x15, 0x10, 0x09, 0x48, 0x33, 0x53, 0x0B, 0x19, 0x15, 0x2a, 0x2f]);   // NVGAMCTRL (E1h): Negative Voltage Gamma Control
-
     // NVGAMCTRL: Negative Voltage Gamma Contro
     // cmd(0xe1, [0xf0, 0x05, 0x08, 0x07, 0x06, 0x02, 0x26, 0x32, 0x3d, 0x3a, 0x16, 0x16, 0x26, 0x2c]);
     //TFT_INVONN: Invert display, no args, no delay
@@ -140,7 +139,8 @@ Modules.addCached("eucWatch", function() {
 
   }
 
-  var bpp = (require("Storage").read("setting.json") && require("Storage").readJSON("setting.json").bpp) ? require("Storage").readJSON("setting.json").bpp : 1;
+  var bpp = (require("Storage").read("ew.json") && require("Storage").readJSON("ew.json").bpp) ? require("Storage").readJSON("ew.json").bpp : 1;
+  //var bpp=1;
   var g = Graphics.createArrayBuffer(240, 280, bpp);
   var pal;
   g.sc = g.setColor;
@@ -148,17 +148,15 @@ Modules.addCached("eucWatch", function() {
   //g.col = Uint16Array([0x000,  0x0842, 0x5B2F,0xEF5D, 0x196E,0x3299,0x1084,0x0F6A,  0x3ADC, 3935,    2220,     0x5ff,     115,       0xF165,  0xEFBF,   0xFFFF]); old
   //g.col=Uint16Array([  0x000,  0x0842, 0x5B2F,0xce9b, 0x001D,0x3299,0x1084,0x0F6A,  0x3ADC, 3935,    2220,     0x07FF,    115,       0xd800,  0xFFE0,   0xFFFF ]);
   //g.col=Uint16Array([  0x000,  0x0842, 0x5B2F,0xce9b, 0x001D,0x3299,0x1084,0x07f0,  0x3ADC, F81F,    0x0F6A,    0x07FF,   0x0320,       0xd800,  0xFFE0,   0xFFFF ]);
-
-  
+  global.color=Uint16Array([0x000, 0x1084, 0x5B2F, 0xce9b, 0x001D, 0x3299, 0x0842, 0x0F6A, 0x3ADC, 0xF81F, 2220, 0x07FF, 115, 0xd800, 0xFFE0, 0xFFFF]);
+  global.theme=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
   switch (bpp) {
     case 1:
-      pal = g.col;
-      g.buffer = new ArrayBuffer(8400);
-      c1 = pal[1]; //save color 1
+       pal = Uint16Array([0x000, 4095]);
+      //let sc = g.setColor;
       g.setColor = function(c, v) {
-        "ram";
-        if (c == 1) pal[1] = g.col[v];
-        else pal[0] = g.col[v];
+        if (c == 1) pal[1] = color[v];
+        else pal[0] = color[v];
         g.sc(c);
       };
       break;
@@ -168,13 +166,12 @@ Modules.addCached("eucWatch", function() {
       break;
     case 4:
       //        color
-      global.theme=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
       //global.color= Uint16Array([0x000, 0x1084, 0x5B2F, 0xce9b, 0x196E,0x114d, 0x0842, 0x0640, 0x045f, 0xF81F, 115, 0x07FF, 0x0320, 0xd800, 0xFFE0, 0xFFFF]);
       //global.color= Uint16Array([0x000, 0x1084, 0x5B2F, 0xce9b, 2220, 115, 0x0842, 0x0320, 0x07f0, 0xF81F, 0x0F6A, 0x07FF, 115, 0xd800, 0xFFE0, 0xFFFF]);
-      global.color=Uint16Array([0x000, 0x1084, 0x5B2F, 0xce9b, 0x001D, 0x3299, 0x0842, 0x0F6A, 0x3ADC, 0xF81F, 2220, 0x07FF, 115, 0xd800, 0xFFE0, 0xFFFF]);
+  
       g.buffer = new ArrayBuffer(33600);
       //pal = Uint16Array([0x000, 0x1084, 0x5B2F, 0xce9b, 0x196E, 0x3299, 0x0842, 0x0F6A, 0x07f0, 3935, 2220, 0x07FF, 0x3299, 0xd800, 0xFFE0, 0xFFFF]);
-      pal=global.color
+      pal=global.color;
       //pal = Uint16Array([0x000, 0x1084, 0x5B2F, 0xce9b, 0x001D, 0x3299, 0x0842, 0x0F6A, 0x3ADC, 3935, 2220, 0x07FF, 115, 0xd800, 0xFFE0, 0xFFFF]);
       //pal= g.col;
       g.setColor = (c, v) => { g.sc(v); };
@@ -198,6 +195,21 @@ Modules.addCached("eucWatch", function() {
   g.palA = E.getAddressOf(pal.buffer, true); // pallete address
   g.buffA = E.getAddressOf(g.buffer, true); // framebuffer address
   g.stride = g.getWidth() * bpp / 8;
+  
+  if (require('Storage').read('.displayM')){  //V1 support
+    g.lala=g.fillRect;
+    g.fillRect=function(x,y,x1,y1){
+      g.lala(x,y+20,x1,y1+20)
+    };
+    g.lal1=g.drawString;
+    g.drawString=function(t,x,y){
+      g.lal1(t,x,y+20)
+    };
+    g.lal2=g.drawImage;
+    g.drawImage=function(t,x,y){
+      g.lal2(t,x,y+20)
+    };  
+  }
 
   g.flip = function(force) {
     "ram";
@@ -255,7 +267,7 @@ Modules.addCached("eucWatch", function() {
   };
 
   g.bri = {
-    lv: ((require("Storage").readJSON("setting.json", 1) || {}).bri) ? (require("Storage").readJSON("setting.json", 1) || {}).bri : 3,
+    lv: ((require("Storage").readJSON("ew.json", 1) || {}).bri) ? (require("Storage").readJSON("ew.json", 1) || {}).bri : 3,
     set: function(o) {
       if (o) this.lv = o;
       else { this.lv++; if (this.lv > 7) this.lv = 1;

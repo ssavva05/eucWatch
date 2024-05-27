@@ -6,14 +6,14 @@
 	"trip": {"totl":0,"last":0,"left":0,"topS":0,"avrS":0,"time":0,"pwm":0},
 	"auto": {
 		"offT":0,
-		"onC":{"HL":0,"led":0,"beep":0,"unlk":0,"lift":0,"talk":1,"pass":0},
+		"onC":{"HL":0,"led":0,"beep":0,"unlk":0,"lift":0,"talk":1,"pass":0,"clrM":0},
 		"onD":{"HL":0,"led":0,"beep":0,"lock":0,"lift":0,"talk":0,"off":0}
 	},
 	"live": {"spd":0,"volt":0,"amp":0,"bat":0,"tmp":0,"tmpM":0,"pwm":0 },
 	"opt": {"lght":{"HL":0,"strb":0,"led":0,"city":0},
 			"bat":{"hi":420,"low":330,"pack":1.5},
 			"ride":{"mode":2,"rolA":0,"pTlt":0},
-			"horn":{"en":0,"mode":0},
+			"horn":{"en":0,"mode":4},
 			"lock":{"en":0,"pass":"","pLck":0,"far":83,"near":65},
 			"unit":{
 				"fact":{"spd":1,"dist":1},

@@ -5,7 +5,7 @@ face[0] = {
         txt: 15,
         txt1: 14,
         txt2: 0,
-        hdr: 1),
+        hdr: 1,
         hdrTxt: 3,
         bck: 5,
         bck1: 3,
@@ -93,62 +93,45 @@ face[0] = {
         this.clear(o);
     }
 };
+UIc.start(1,1);
+UI.ele.coord("bar","_bar",1);
+//UI.ele.coord("bar","_bar",2);
+UI.ele.coord("bar","_bar",3);
 
-face[1] = {
-    offms: 1000,
-    init: function() {
-        return true;
-    },
-    show: function() {
-        face.go("clock", 0);
-        return true;
-    },
-    clear: function() {
-        return true;
+/*
+  sendHid = function (code, cb) {
+    try {
+      NRF.sendHIDReport([1,code], () => {
+        NRF.sendHIDReport([1,0], () => {
+          if (cb) cb();
+        });
+      });
+    } catch(e) {
+      print(e);
     }
+  };
+  next = function (cb) { sendHid(0x01, cb); };
+  prev = function (cb) { sendHid(0x02, cb); };
+  toggle = function (cb) { sendHid(0x10, cb); };
+  up = function (cb) {sendHid(0x40, cb); };
+  down = function (cb) { sendHid(0x80, cb); };
+
+*/
+UIc.end();
+
+
+UIc.bar._bar=(i)=>{ 
+	buzzer.nav(buzzer.buzz.ok);
+    if (i==1) {
+        //down();
+	    ew.is.hidM.volumeDown();
+    }    else if (i==2) {
+	    ew.is.hidM.playpause();
+    }    else if (i==3) {
+        //up();
+	    ew.is.hidM.volumeUp();
+    }
+
+
 };
-touchHandler[0] = function(e, x, y) {
-    var g = w.gfx;
-    if (ew.def.hid == 1) {
-        if (e == 5) {
-            if (59 < x && x < 180 && 142 < y && y < 239) {
-                ew.is.hidM.playpause();
-                buzzer.nav([30, 50, 30]);
-            } else if (0 < x && x < 58 && 192 < y && y < 239) {//prev
-                ew.is.hidM.prev();
-                buzzer.nav([30, 50, 30]);
-            } else if (181 < x && x < 239 && 192 < y && y < 239) { //next
-                ew.is.hidM.next();
-                buzzer.nav([30, 50, 30]);
-            } else if (181 < x && x < 239 && 142 < y && y < 191) {//vol_up
-                ew.is.hidM.volumeUp();
-                buzzer.nav([30, 50, 30]);
-            } else if (0 < x && x < 58 && 142 < y && y < 191) {//vol_down
-                ew.is.hidM.volumeDown();
-                buzzer.nav([30, 50, 30]);
-            } else buzzer.nav(buzzer.buzz.na);
-        }
-    }
-    if (e == 1) {
-        face.go("hid", -1);
-        return;
-    } else if (e == 2) {
-        if (y > 160 && x < 50) {
-            if (w.gfx.bri.lv !== 7) {
-                this.bri = w.gfx.bri.lv;
-                w.gfx.bri.set(7);
-            } else w.gfx.bri.set(this.bri);
-            buzzer.nav([30, 50, 30]);
-        } else {
-            face.go("settings", 0);
-            return;
-        } 
-    } else if (e == 3) {
-        buzzer.nav( 40);
-    } else if (e == 4) {
-        face.go("clock", -0);
-        return;
-    } else if (e == 12) {
-        buzzer.nav(buzzer.buzz.na);
-    }
-};
+
